@@ -1,10 +1,12 @@
-from sklearn.base import BaseEstimator
-from sklearn.base import TransformerMixin
 from sklearn.preprocessing import LabelEncoder
 import numpy as np
 
 
-class LabelEncoderSupportingMissingValues(TransformerMixin, BaseEstimator):
+class LabelEncoderSupportingMissingValues():
+    """
+    Behaves exactly like sklearn's LabelEncoder() except encodes missing values
+    (represented by np.nan) with np.nan.
+    """
 
     def __init__(self):
         self.labelencoder = LabelEncoder()
@@ -24,8 +26,8 @@ class LabelEncoderSupportingMissingValues(TransformerMixin, BaseEstimator):
         enc_y[~np.isnan(enc_y)] = self.labelencoder.transform(y[~np.isnan(y)])
         return enc_y
 
-    def inverse_transform(self, y):
-        inv_y = np.copy(y)
-        inv_y[~np.isnan(inv_y)] = self.labelencoder.inverse_transform(
-            y[~np.isnan(y)].astype(np.int))
-        return inv_y
+    def inverse_transform(self, enc_y):
+        y = np.copy(enc_y)
+        y[~np.isnan(y)] = self.labelencoder.inverse_transform(
+            enc_y[~np.isnan(enc_y)].astype(np.int))
+        return y
