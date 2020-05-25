@@ -10,22 +10,22 @@ class LabelEncoderSupportingMissingValues(TransformerMixin, BaseEstimator):
         self.labelencoder = LabelEncoder()
 
     def fit(self, y):
-        self.labelencoder = self.labelencoder.fit(y[y != None])
+        self.labelencoder = self.labelencoder.fit(y[~np.isnan(y)])
         return self
 
     def transform(self, y):
         enc_y = np.copy(y)
-        enc_y[enc_y != None] = self.labelencoder.transform(y[y != None])
+        enc_y[~np.isnan(enc_y)] = self.labelencoder.transform(y[~np.isnan(y)])
         return enc_y
 
     def fit_transform(self, y):
-        self.labelencoder = self.labelencoder.fit(y[y != None])
+        self.labelencoder = self.labelencoder.fit(y[~np.isnan(y)])
         enc_y = np.copy(y)
-        enc_y[enc_y != None] = self.labelencoder.transform(y[y != None])
+        enc_y[~np.isnan(enc_y)] = self.labelencoder.transform(y[~np.isnan(y)])
         return enc_y
 
     def inverse_transform(self, y):
         inv_y = np.copy(y)
-        inv_y[inv_y != None] = self.labelencoder.inverse_transform(
-            y[y != None].astype(np.int))
+        inv_y[~np.isnan(inv_y)] = self.labelencoder.inverse_transform(
+            y[~np.isnan(y)].astype(np.int))
         return inv_y
